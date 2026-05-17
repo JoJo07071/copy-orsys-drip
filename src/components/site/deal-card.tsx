@@ -1,9 +1,11 @@
 import { Link } from "@tanstack/react-router";
 import { Flame, MessageCircle, ArrowBigUp, ArrowBigDown, Clock, Tag } from "lucide-react";
-import type { Deal } from "@/data/mock";
+import type { DealView } from "@/types/deal";
+import { expiresInLabel } from "@/lib/format";
+import fallbackImg from "@/assets/deal-sneakers.jpg";
 
 function HeatBadge({ heat }: { heat: number }) {
-  const hot = heat >= 500;
+  const hot = heat >= 50;
   return (
     <div className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold tabular-nums ${hot ? "hot-gradient text-hot-foreground" : "bg-muted text-foreground"}`}>
       <Flame className="h-3 w-3" />
@@ -12,8 +14,8 @@ function HeatBadge({ heat }: { heat: number }) {
   );
 }
 
-export function DealCard({ deal, featured = false }: { deal: Deal; featured?: boolean }) {
-  const discount = Math.round((1 - deal.priceDeal / deal.priceOriginal) * 100);
+export function DealCard({ deal, featured = false }: { deal: DealView; featured?: boolean }) {
+  const discount = Math.round((1 - deal.price_deal / deal.price_original) * 100);
   return (
     <Link
       to="/deals/$slug"
@@ -22,7 +24,7 @@ export function DealCard({ deal, featured = false }: { deal: Deal; featured?: bo
     >
       <div className="relative aspect-[4/5] overflow-hidden bg-muted">
         <img
-          src={deal.image}
+          src={deal.image_url ?? fallbackImg}
           alt={deal.title}
           loading="lazy"
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
@@ -42,26 +44,32 @@ export function DealCard({ deal, featured = false }: { deal: Deal; featured?: bo
       <div className="flex flex-1 flex-col gap-2 p-4">
         <div className="flex items-center justify-between text-[11px] uppercase tracking-wider text-muted-foreground">
           <span>{deal.brand}</span>
-          <span className="inline-flex items-center gap-1"><Clock className="h-3 w-3" />{deal.expiresIn}</span>
+          <span className="inline-flex items-center gap-1"><Clock className="h-3 w-3" />{expiresInLabel(deal.expires_at)}</span>
         </div>
         <h3 className={`font-display font-medium leading-snug text-foreground ${featured ? "text-2xl" : "text-base"}`}>
           {deal.title}
         </h3>
         <div className="mt-auto flex items-end justify-between pt-2">
           <div className="flex items-baseline gap-2">
-            <span className="font-display text-2xl font-semibold tabular-nums">{deal.priceDeal}€</span>
-            <span className="text-sm text-muted-foreground line-through tabular-nums">{deal.priceOriginal}€</span>
+            <span className="font-display text-2xl font-semibold tabular-nums">{deal.price_deal}€</span>
+            <span className="text-sm text-muted-foreground line-through tabular-nums">{deal.price_original}€</span>
           </div>
           <div className="flex items-center gap-3 text-xs text-muted-foreground">
             <span className="inline-flex items-center gap-1"><ArrowBigUp className="h-4 w-4" />{deal.upvotes}</span>
-            <span className="inline-flex items-center gap-1"><MessageCircle className="h-3.5 w-3.5" />{deal.comments}</span>
+            <span className="inline-flex items-center gap-1"><MessageCircle className="h-3.5 w-3.5" />{deal.comments_count}</span>
           </div>
         </div>
         <div className="flex items-center justify-between border-t border-border pt-3 text-xs text-muted-foreground">
-          <span>par <span className="font-medium text-foreground">@{deal.postedBy}</span></span>
+          <span>
+            {deal.poster_handle ? (
+              <>par <span className="font-medium text-foreground">@{deal.poster_handle}</span></>
+            ) : (
+              <span className="italic">deal seed</span>
+            )}
+          </span>
           <div className="flex items-center gap-1">
-            <button className="rounded p-1 hover:bg-muted" onClick={(e) => e.preventDefault()}><ArrowBigUp className="h-4 w-4" /></button>
-            <button className="rounded p-1 hover:bg-muted" onClick={(e) => e.preventDefault()}><ArrowBigDown className="h-4 w-4" /></button>
+            <span className="rounded p-1"><ArrowBigUp className="h-4 w-4" /></span>
+            <span className="rounded p-1"><ArrowBigDown className="h-4 w-4" /></span>
           </div>
         </div>
       </div>
