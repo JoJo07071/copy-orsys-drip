@@ -32,7 +32,7 @@ async function hydrate(deals: DealRow[]): Promise<DealView[]> {
     .from("deal_stats")
     .select("*")
     .in("deal_id", ids);
-  const sMap = new Map((stats ?? []).map((s: { deal_id: string; upvotes: number; downvotes: number; heat: number; comments_count: number }) => [s.deal_id, s]));
+  const sMap = new Map((stats ?? []).filter((s) => s.deal_id).map((s) => [s.deal_id as string, s] as const));
   return deals.map((d) => {
     const s = sMap.get(d.id);
     return {
