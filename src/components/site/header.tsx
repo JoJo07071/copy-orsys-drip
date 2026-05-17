@@ -1,7 +1,16 @@
-import { Link } from "@tanstack/react-router";
-import { Search, User, Bell, Heart, Flame, Menu } from "lucide-react";
+import { Link, useRouter } from "@tanstack/react-router";
+import { Search, User, Bell, Heart, Flame, Menu, LogOut } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
 
 export function SiteHeader() {
+  const { user, profile, signOut } = useAuth();
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.invalidate();
+  };
+
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur-md">
       <div className="border-b border-border/60 bg-ink text-background">
@@ -16,11 +25,10 @@ export function SiteHeader() {
         </Link>
         <nav className="hidden items-center gap-7 text-sm font-medium md:flex">
           <Link to="/deals" className="hover:text-accent transition-colors">Hot</Link>
-          <Link to="/c/femme" className="hover:text-accent transition-colors">Femme</Link>
-          <Link to="/c/homme" className="hover:text-accent transition-colors">Homme</Link>
-          <Link to="/c/sneakers" className="hover:text-accent transition-colors">Sneakers</Link>
-          <Link to="/c/luxe" className="hover:text-accent transition-colors">Luxe</Link>
-          <Link to="/c/outlet" className="hover:text-accent transition-colors">Outlet</Link>
+          <Link to="/c/$cat" params={{ cat: "femme" }} className="hover:text-accent transition-colors">Femme</Link>
+          <Link to="/c/$cat" params={{ cat: "homme" }} className="hover:text-accent transition-colors">Homme</Link>
+          <Link to="/c/$cat" params={{ cat: "sneakers" }} className="hover:text-accent transition-colors">Sneakers</Link>
+          <Link to="/c/$cat" params={{ cat: "luxe" }} className="hover:text-accent transition-colors">Luxe</Link>
           <Link to="/leaderboard" className="hover:text-accent transition-colors">Communauté</Link>
         </nav>
         <div className="ml-auto hidden flex-1 max-w-md md:block">
@@ -35,7 +43,19 @@ export function SiteHeader() {
         <div className="ml-auto flex items-center gap-1 md:ml-0">
           <button className="rounded-full p-2 hover:bg-muted" aria-label="Notifications"><Bell className="h-5 w-5" /></button>
           <button className="rounded-full p-2 hover:bg-muted" aria-label="Wishlist"><Heart className="h-5 w-5" /></button>
-          <Link to="/auth" className="rounded-full p-2 hover:bg-muted" aria-label="Compte"><User className="h-5 w-5" /></Link>
+          {user && profile ? (
+            <>
+              <Link to="/u/$handle" params={{ handle: profile.handle }} className="hidden items-center gap-2 rounded-full border border-border px-3 py-1.5 text-xs md:inline-flex">
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-ink text-background">{profile.display_name[0]}</span>
+                @{profile.handle}
+              </Link>
+              <button onClick={handleSignOut} className="rounded-full p-2 hover:bg-muted" aria-label="Se déconnecter">
+                <LogOut className="h-5 w-5" />
+              </button>
+            </>
+          ) : (
+            <Link to="/auth" className="rounded-full p-2 hover:bg-muted" aria-label="Compte"><User className="h-5 w-5" /></Link>
+          )}
           <Link to="/post" className="ml-2 hidden rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-ink md:inline-block">
             Poster un deal
           </Link>
