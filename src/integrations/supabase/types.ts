@@ -14,16 +14,261 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      comments: {
+        Row: {
+          created_at: string
+          deal_id: string
+          id: string
+          text: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          deal_id: string
+          id?: string
+          text: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          deal_id?: string
+          id?: string
+          text?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deal_stats"
+            referencedColumns: ["deal_id"]
+          },
+          {
+            foreignKeyName: "comments_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_points"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      deal_votes: {
+        Row: {
+          created_at: string
+          deal_id: string
+          user_id: string
+          value: number
+        }
+        Insert: {
+          created_at?: string
+          deal_id: string
+          user_id: string
+          value: number
+        }
+        Update: {
+          created_at?: string
+          deal_id?: string
+          user_id?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deal_votes_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deal_stats"
+            referencedColumns: ["deal_id"]
+          },
+          {
+            foreignKeyName: "deal_votes_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      deals: {
+        Row: {
+          brand: string
+          category: string
+          code: string | null
+          created_at: string
+          expires_at: string | null
+          gender: Database["public"]["Enums"]["deal_gender"]
+          id: string
+          image_url: string | null
+          merchant: string
+          posted_by: string | null
+          price_deal: number
+          price_original: number
+          slug: string
+          tags: string[]
+          title: string
+          url: string
+        }
+        Insert: {
+          brand: string
+          category: string
+          code?: string | null
+          created_at?: string
+          expires_at?: string | null
+          gender?: Database["public"]["Enums"]["deal_gender"]
+          id?: string
+          image_url?: string | null
+          merchant: string
+          posted_by?: string | null
+          price_deal: number
+          price_original: number
+          slug: string
+          tags?: string[]
+          title: string
+          url: string
+        }
+        Update: {
+          brand?: string
+          category?: string
+          code?: string | null
+          created_at?: string
+          expires_at?: string | null
+          gender?: Database["public"]["Enums"]["deal_gender"]
+          id?: string
+          image_url?: string | null
+          merchant?: string
+          posted_by?: string | null
+          price_deal?: number
+          price_original?: number
+          slug?: string
+          tags?: string[]
+          title?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deals_posted_by_fkey"
+            columns: ["posted_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deals_posted_by_fkey"
+            columns: ["posted_by"]
+            isOneToOne: false
+            referencedRelation: "user_points"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          display_name: string
+          handle: string
+          id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name: string
+          handle: string
+          id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string
+          handle?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
-      [_ in never]: never
+      deal_stats: {
+        Row: {
+          comments_count: number | null
+          deal_id: string | null
+          downvotes: number | null
+          heat: number | null
+          upvotes: number | null
+        }
+        Relationships: []
+      }
+      user_points: {
+        Row: {
+          deals_count: number | null
+          display_name: string | null
+          handle: string | null
+          points: number | null
+          user_id: string | null
+        }
+        Insert: {
+          deals_count?: never
+          display_name?: string | null
+          handle?: string | null
+          points?: never
+          user_id?: string | null
+        }
+        Update: {
+          deals_count?: never
+          display_name?: string | null
+          handle?: string | null
+          points?: never
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user"
+      deal_gender: "homme" | "femme" | "unisexe"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +395,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+      deal_gender: ["homme", "femme", "unisexe"],
+    },
   },
 } as const
